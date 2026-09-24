@@ -43,7 +43,42 @@
   <footer><div class="shell footer-grid"><p>© 2026 «Сила символов»</p><p>Розница — на Ozon · <a href="https://max.ru/se14344994_biz" target="_blank" rel="noopener">Канал в MAX</a></p></div></footer>
   <script src="catalog.js"></script>
   <script>
-    const catalog = window.CATALOG || [];
+    function classifyProduct(item) {
+      if (item.group) return item;
+      const title = item.title.toLocaleLowerCase('ru');
+      const original = item.category;
+      let group = 'Подарки и упаковка';
+      let category = original;
+
+      if (original === 'Православные карточки') {
+        if (title.includes('магнит')) { group = 'Магниты'; category = 'Православные магниты'; }
+        else if (title.includes('крестик') || title.includes('молитвенный набор')) { group = 'Православные товары'; category = 'Молитвенные наборы и крестики'; }
+        else { group = 'Православные товары'; category = title.includes('именная') ? 'Именные карточки-иконы' : 'Карточки с молитвами'; }
+      } else if (original === 'Крестики') {
+        group = 'Православные товары'; category = 'Молитвенные наборы и крестики';
+      } else if (original === 'Магниты') {
+        group = 'Магниты'; category = 'Новогодние магниты';
+      } else if (original === 'Свечи и нити') {
+        group = 'Свечи и обереги';
+        category = title.includes('свеч') ? 'Свечи' :
+          (title.includes('нить') || title.includes('браслет')) ? 'Нити-обереги' : 'Амулеты, булавки и соль';
+      } else if (original === 'Талисманы и обереги') {
+        group = 'Свечи и обереги'; category = 'Карты-талисманы';
+      } else if (original === 'Наклейки' || original === 'Этикетки') {
+        group = 'Наклейки и этикетки';
+        if (title.includes('тетрад')) category = 'Школьные наклейки';
+        else if (title.includes('замороз') || title.includes('закруток') || title.includes('продукт') || title.includes('сахара') || title.includes('соли') || title.includes('специй')) category = 'Для заморозки и заготовок';
+        else if (title.includes('переезд') || title.includes('хранения вещей')) category = 'Для хранения и переезда';
+        else if (original === 'Этикетки') category = 'Этикетки для упаковки';
+        else category = 'Подарочные наклейки';
+      } else if (original === 'Праздники и упаковка') category = 'Подарочная упаковка';
+      else if (original === 'Подарочные наборы') category = 'Подарочные наборы';
+      else if (original === 'Статуэтки') category = 'Декор и статуэтки';
+
+      return { ...item, group, category };
+    }
+
+    const catalog = (window.CATALOG || []).map(classifyProduct);
     const grid = document.getElementById('catalog-grid');
     const search = document.getElementById('catalog-search');
     const groupFilters = document.getElementById('catalog-groups');
